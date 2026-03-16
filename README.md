@@ -1,12 +1,12 @@
 # Razzle Dazzle
 
-Razzle Dazzle is a React + Vite app that turns a personal memory into animated p5.js sketch concepts. Users describe an experience, choose planning inputs like weather and emotion, compare four generated sketches, then refine a selected sketch through feedback.
+Razzle Dazzle is a React app built with Vite on the frontend and a small Node server on the backend. It turns a personal memory into animated p5.js sketch concepts: users describe an experience, choose planning inputs like weather and emotion, compare four generated sketches, then refine a selected sketch through feedback.
 
 ## How It Works
 
 The app runs as two pieces:
 
-- Frontend: React UI for chat, planning controls, sketch previews, and refinement
+- Frontend: React UI served by Vite for chat, planning controls, sketch previews, and refinement
 - Backend: a small Node HTTP server that talks to the OpenAI API
 
 The frontend never holds the OpenAI key. It sends requests to local `/api/*` endpoints, and the server reads `OPENAI_API_KEY` from the environment.
@@ -28,9 +28,10 @@ server/
   openaiService.js     Server-side OpenAI calls and prompt logic
 
 src/
-  App.jsx              Main application flow
+  App.jsx                Main application flow
   services/aiService.js  Frontend API client for /api routes
-  utils/buildSketchHtml.js  Sketch validation and iframe rendering helpers
+  utils/buildSketchHtml.js
+                         Sketch validation and iframe rendering helpers
 ```
 
 ## Environment Variables
@@ -41,7 +42,7 @@ Create a local `.env` file:
 OPENAI_API_KEY=your_real_openai_key
 ```
 
-A placeholder template is included in [`.env.example`](/Users/alexshi/projects/info4940p2/.env.example).
+A placeholder template is included in [`.env.example`](./.env.example).
 
 Notes:
 
@@ -89,9 +90,19 @@ This repo currently includes the Node API server, but deployment is still your r
 
 ## Security Notes
 
-- OpenAI requests are handled server-side in [`server/openaiService.js`](/Users/alexshi/projects/info4940p2/server/openaiService.js)
+- OpenAI requests are handled server-side in [`server/openaiService.js`](./server/openaiService.js)
+- The frontend calls local API routes through [`src/services/aiService.js`](./src/services/aiService.js)
 - The repo is intended to be public, so never put real keys in tracked files
 - If a key was ever exposed in an older client-side version, rotate it
+
+## GitHub Setup
+
+Before pushing this repo publicly:
+
+1. Keep real secrets only in `.env`.
+2. Keep [`.env.example`](./.env.example) as placeholders only.
+3. Verify [`.gitignore`](./.gitignore) ignores `.env`.
+4. Rotate any key that was previously exposed in an earlier browser-based version.
 
 ## Scripts
 
