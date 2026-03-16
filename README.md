@@ -1,16 +1,111 @@
-# React + Vite
+# Razzle Dazzle
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Razzle Dazzle is a React + Vite app that turns a personal memory into animated p5.js sketch concepts. Users describe an experience, choose planning inputs like weather and emotion, compare four generated sketches, then refine a selected sketch through feedback.
 
-Currently, two official plugins are available:
+## How It Works
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The app runs as two pieces:
 
-## React Compiler
+- Frontend: React UI for chat, planning controls, sketch previews, and refinement
+- Backend: a small Node HTTP server that talks to the OpenAI API
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The frontend never holds the OpenAI key. It sends requests to local `/api/*` endpoints, and the server reads `OPENAI_API_KEY` from the environment.
 
-## Expanding the ESLint configuration
+Current flow:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. The user describes a memory.
+2. The user explicitly chooses weather, emotion tags, and a sketch direction.
+3. The chat model asks brief clarifying questions or produces a sketch-ready summary.
+4. The server generates four p5.js sketch candidates.
+5. The user selects one sketch and refines it with rating + text feedback.
+6. The final sketch code can be copied into the p5 editor.
+
+## Project Structure
+
+```text
+server/
+  index.js             HTTP API endpoints
+  openaiService.js     Server-side OpenAI calls and prompt logic
+
+src/
+  App.jsx              Main application flow
+  services/aiService.js  Frontend API client for /api routes
+  utils/buildSketchHtml.js  Sketch validation and iframe rendering helpers
+```
+
+## Environment Variables
+
+Create a local `.env` file:
+
+```env
+OPENAI_API_KEY=your_real_openai_key
+```
+
+A placeholder template is included in [`.env.example`](/Users/alexshi/projects/info4940p2/.env.example).
+
+Notes:
+
+- Do not prefix server secrets with `VITE_`
+- Do not commit `.env`
+- `.env.example` should contain placeholders only
+
+## Local Development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the API server in one terminal:
+
+```bash
+npm run dev:server
+```
+
+Run the frontend in another:
+
+```bash
+npm run dev
+```
+
+The Vite dev server proxies `/api` requests to `http://localhost:8787`.
+
+## Production Build
+
+Build the frontend:
+
+```bash
+npm run build
+```
+
+Start the API server:
+
+```bash
+npm run start:server
+```
+
+This repo currently includes the Node API server, but deployment is still your responsibility. For production, host the frontend and backend in a setup where the backend can securely read `OPENAI_API_KEY`.
+
+## Security Notes
+
+- OpenAI requests are handled server-side in [`server/openaiService.js`](/Users/alexshi/projects/info4940p2/server/openaiService.js)
+- The repo is intended to be public, so never put real keys in tracked files
+- If a key was ever exposed in an older client-side version, rotate it
+
+## Scripts
+
+```bash
+npm run dev          # start Vite frontend
+npm run dev:server   # start local API server
+npm run build        # build frontend assets
+npm run preview      # preview built frontend
+npm run start:server # start API server without Vite
+npm run lint         # run ESLint
+```
+
+## Known Limitations
+
+- The app currently depends on OpenAI availability and rate limits
+- A few non-secret React hook lint warnings remain in the codebase
+- Sketch generation quality still depends heavily on prompt compliance from the model
