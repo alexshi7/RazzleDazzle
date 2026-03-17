@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const EMOTION_OPTIONS = [
   'n/a',
   'calm',
@@ -30,12 +32,17 @@ function toggleEmotion(value, emotion, checked) {
 }
 
 export default function EmotionDropdown({ value, onChange, disabled }) {
+  const [isOpen, setIsOpen] = useState(false);
   const selectedLabel = value.length === 0
     ? 'Choose emotion tags'
     : value.join(', ');
 
   return (
-    <details className="group relative">
+    <details
+      className="group relative"
+      open={isOpen}
+      onToggle={event => setIsOpen(event.currentTarget.open)}
+    >
       <summary className="flex cursor-pointer list-none items-center justify-between rounded-xl border border-gray-700 bg-gray-800/60 px-3 py-2 text-sm text-gray-300 transition-colors hover:border-fuchsia-500/50">
         <span className={`${value.length === 0 ? 'text-gray-500' : 'text-gray-200'} truncate pr-3`}>
           {selectedLabel}
@@ -43,7 +50,16 @@ export default function EmotionDropdown({ value, onChange, disabled }) {
         <span className="text-gray-500 transition-transform group-open:rotate-180">▾</span>
       </summary>
       <div className="mt-2 w-full rounded-2xl border border-gray-700 bg-[#14141c] p-3 shadow-2xl">
-        <div className="mb-2 text-xs uppercase tracking-[0.2em] text-gray-500">Select one or more</div>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <div className="text-xs uppercase tracking-[0.2em] text-gray-500">Select one or more</div>
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="rounded-md border border-gray-700 bg-black/20 px-2 py-1 text-xs text-gray-300 transition-colors hover:border-fuchsia-500/50 hover:text-white"
+          >
+            ˄
+          </button>
+        </div>
         <div className="max-h-52 overflow-y-auto pr-1">
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {EMOTION_OPTIONS.map(emotion => {

@@ -37,17 +37,25 @@ export default function ChatInterface({
     <div className="flex flex-col h-full min-h-0">
       {/* Header */}
       <div className="px-4 sm:px-6 py-4 border-b border-gray-700/50 shrink-0">
-        <div className="rd-fade-up rounded-3xl border border-fuchsia-400/15 bg-[linear-gradient(135deg,rgba(168,85,247,0.18),rgba(244,114,182,0.08),rgba(255,255,255,0.02))] p-4 sm:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <div className={`rd-fade-up rounded-3xl border border-fuchsia-400/15 bg-[linear-gradient(135deg,rgba(168,85,247,0.18),rgba(244,114,182,0.08),rgba(255,255,255,0.02))] shadow-[0_20px_60px_rgba(0,0,0,0.25)] transition-all duration-300 ${hasUserMessage ? 'p-3 sm:p-4' : 'p-4 sm:p-5'}`}>
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="text-[11px] uppercase tracking-[0.28em] text-fuchsia-200/80">Razzle Dazzle</div>
-              <h1 className="mt-2 text-xl sm:text-2xl font-semibold text-white">Turn a memory into an animated sketch.</h1>
-              <p className="mt-2 max-w-xl text-sm text-gray-300">
-                Start with the story, set the scene context, then compare four p5.js directions and refine the strongest one.
-              </p>
-              <p className="mt-3 max-w-xl text-sm text-fuchsia-100/90">
-                Please take 1-2 minutes to carefully fill out these planning steps before you generate sketches.
-              </p>
+              <h1 className={`mt-2 font-semibold text-white transition-all duration-300 ${hasUserMessage ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'}`}>Turn a memory into an animated sketch.</h1>
+              {hasUserMessage ? (
+                <p className="mt-2 max-w-xl text-sm text-gray-300">
+                  Planning is active below. Adjust the scene inputs, then keep sketching.
+                </p>
+              ) : (
+                <>
+                  <p className="mt-2 max-w-xl text-sm text-gray-300">
+                    Start with the story, set the scene context, then compare four p5.js directions and refine the strongest one.
+                  </p>
+                  <p className="mt-3 max-w-xl text-sm text-fuchsia-100/90">
+                    Please take 1-2 minutes to carefully fill out these planning steps before you generate sketches.
+                  </p>
+                </>
+              )}
             </div>
             <div className="hidden sm:flex items-center gap-2 text-xs text-gray-300">
               <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">1. Describe</span>

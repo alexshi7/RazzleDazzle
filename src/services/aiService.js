@@ -1,6 +1,6 @@
 import { validateSketchCode } from '../utils/buildSketchHtml';
 
-const FIRST_REPLY_DISCLAIMER = `Razzle Dazzle is a sketch tool, not a mental health service. If you need professional support, please seek professional help. To get Razzle Dazzle back on track, describe the scene, imagery, colors, motion, weather, or emotions you want visualized.`;
+const FIRST_REPLY_DISCLAIMER = `DISCLAIMER: Razzle Dazzle is a sketch tool, not a mental health service. If you need professional support, please seek professional help. To get Razzle Dazzle back on track, describe the scene, imagery, colors, motion, weather, or emotions you want visualized.`;
 
 let chatHistory = [];
 let conversationSummary = '';
@@ -22,6 +22,19 @@ async function postJson(path, body) {
   return payload;
 }
 
+async function getJson(path) {
+  const response = await fetch(path);
+  const payload = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      payload.error || 'Request failed. Make sure the API server is running and OPENAI_API_KEY is set in .env.'
+    );
+  }
+
+  return payload;
+}
+
 function assertValidSketch(code, label) {
   const result = validateSketchCode(code);
   if (!result.ok) {
@@ -38,8 +51,7 @@ export function initChat() {
 
 export async function sendChatMessage(text) {
   if (chatHistory.length === 0) {
-    const initPayload = await fetch('/api/init');
-    const initData = await initPayload.json();
+    const initData = await getJson('/api/init');
     chatHistory = initData.messages;
   }
 
