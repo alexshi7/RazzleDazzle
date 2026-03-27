@@ -56,21 +56,13 @@ function getPhaseCopy({ phase, isLoading, loadingLabel, feedbackCount }) {
 }
 
 export default function FlowPanel(props) {
-  const { phase, sketchMode, song, summary, weather, emotions = [] } = props;
+  const { phase, sketchMode, summary, weather, emotions = [] } = props;
   const copy = getPhaseCopy(props);
 
   return (
     <aside className="hidden lg:flex w-[300px] xl:w-[320px] shrink-0 border-r border-gray-800 bg-[radial-gradient(circle_at_top,#1d1630,transparent_45%),linear-gradient(180deg,#11111a_0%,#0b0b11_100%)]">
       <div className="flex h-full w-full flex-col overflow-y-auto px-5 py-5 xl:px-6 xl:py-6">
-        <div className="rd-fade-up rounded-3xl border border-white/10 bg-white/5 p-4 xl:p-5 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur">
-          <div className="text-[11px] uppercase tracking-[0.28em] text-fuchsia-300/80">Razzle Dazzle</div>
-          <h1 className="mt-3 text-2xl xl:text-3xl font-semibold tracking-tight text-white">Personal memories, translated into motion.</h1>
-          <p className="mt-3 text-sm leading-6 text-gray-300">
-            This interface stays selective about what it explains, but it should always make the next action legible.
-          </p>
-        </div>
-
-        <div className="rd-fade-up mt-4 rounded-3xl border border-white/10 bg-black/20 p-4 xl:p-5" style={{ animationDelay: '80ms' }}>
+        <div className="rd-fade-up rounded-3xl border border-white/10 bg-black/20 p-4 xl:p-5">
           <div className="text-[11px] uppercase tracking-[0.24em] text-gray-500">Flow</div>
           <div className="mt-4 space-y-3">
             {STEPS.map((step, index) => {
@@ -99,7 +91,7 @@ export default function FlowPanel(props) {
           </div>
         </div>
 
-        <div className="rd-fade-up mt-4 rounded-3xl border border-fuchsia-400/20 bg-fuchsia-400/8 p-4 xl:p-5" style={{ animationDelay: '160ms' }}>
+        <div className="rd-fade-up mt-4 rounded-3xl border border-fuchsia-400/20 bg-fuchsia-400/8 p-4 xl:p-5" style={{ animationDelay: '80ms' }}>
           <div className="text-[11px] uppercase tracking-[0.24em] text-fuchsia-200/80">{copy.eyebrow}</div>
           <h2 className="mt-2 text-lg font-semibold text-white">{copy.title}</h2>
           <p className="mt-3 text-sm leading-6 text-gray-300">{copy.body}</p>
@@ -108,7 +100,7 @@ export default function FlowPanel(props) {
           </div>
         </div>
 
-        <div className="rd-fade-up mt-4 rounded-3xl border border-white/10 bg-black/20 p-4 xl:p-5 text-sm text-gray-300" style={{ animationDelay: '240ms' }}>
+        <div className="rd-fade-up mt-4 rounded-3xl border border-white/10 bg-black/20 p-4 xl:p-5 text-sm text-gray-300" style={{ animationDelay: '160ms' }}>
           <div className="text-[11px] uppercase tracking-[0.24em] text-gray-500">Current setup</div>
           <div className="mt-3 flex flex-wrap gap-2 text-xs">
             <span className="rounded-full border border-gray-700 bg-gray-900 px-3 py-1 text-gray-300">
@@ -120,11 +112,6 @@ export default function FlowPanel(props) {
             <span className="rounded-full border border-gray-700 bg-gray-900 px-3 py-1 text-gray-300">
               Emotions: {emotions.length ? emotions.join(', ') : 'Required'}
             </span>
-            {song?.trim() && (
-              <span className="rounded-full border border-gray-700 bg-gray-900 px-3 py-1 text-gray-300">
-                Song: {song.trim()}
-              </span>
-            )}
           </div>
           {summary && (
             <p className="mt-4 text-xs leading-5 text-gray-400">

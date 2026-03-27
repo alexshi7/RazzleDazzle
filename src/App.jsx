@@ -46,7 +46,7 @@ const WELCOME = "Hi! I'm here to help you create a p5.js sketch from a meaningfu
 
 export default function App() {
   const { state, dispatch } = useAppState();
-  const { phase, messages, sketchMode, song, weather, emotions, summary, sketches, currentSketch, iteration, feedbackHistory, isLoading, loadingLabel, progress, error } = state;
+  const { phase, messages, sketchMode, weather, emotions, summary, sketches, currentSketch, iteration, feedbackHistory, isLoading, loadingLabel, progress, error } = state;
   const progressTimer = useProgressTimer(dispatch);
   const metadataComplete = weather !== '' && emotions.length > 0 && Boolean(sketchMode);
   const hasBootstrappedRef = useRef(false);
@@ -65,7 +65,7 @@ export default function App() {
     dispatch({ type: 'ADD_MESSAGE', payload: { role: 'user', text } });
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const result = await sendChatMessage(text);
+      const result = await sendChatMessage(text, sketchMode);
       dispatch({ type: 'ADD_MESSAGE', payload: { role: 'ai', text: result.text } });
       if (result.ready) {
         await startGridGeneration(result.summary);
@@ -81,7 +81,7 @@ export default function App() {
   async function handleSketchNow() {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const sum = await requestSketchNow();
+      const sum = await requestSketchNow(sketchMode);
       dispatch({ type: 'SET_SUMMARY', payload: sum });
       await startGridGeneration(sum);
     } catch (err) {
@@ -99,7 +99,7 @@ export default function App() {
     dispatch({ type: 'SET_PHASE', payload: PHASE.GRID });
     progressTimer.start('Generating 4 sketch concepts…', 85, 14000);
     try {
-      const generated = await generateProofSketches(sum, sketchMode, song, emotions, weather);
+      const generated = await generateProofSketches(sum, sketchMode, emotions, weather);
       dispatch({ type: 'SET_SKETCHES', payload: generated });
       progressTimer.finish();
     } catch (err) {
@@ -126,8 +126,7 @@ export default function App() {
         summary || getSummary(),
         sketchMode,
         currentSketch,
-        [...feedbackHistory, feedback],
-        song
+        [...feedbackHistory, feedback]
       );
       dispatch({ type: 'SET_CURRENT_SKETCH', payload: newCode });
       progressTimer.finish();
@@ -177,7 +176,7 @@ export default function App() {
 
       <div className="px-4 sm:px-6 pt-3 shrink-0">
         <div className="rounded-2xl border border-amber-400/20 bg-amber-400/8 px-4 py-2.5 text-xs sm:text-sm text-amber-100">
-          <span className="font-medium">Disclaimer:</span> Razzle Dazzle is AI and can make mistakes. Please be patient and cooperative.
+          <span className="font-medium">Disclaimer:</span> Razzle Dazzle is AI and can make mistakes. Please be patient and cooperative. It is not a mental health service. If you need professional support, please seek professional help.
         </div>
       </div>
 
@@ -187,7 +186,6 @@ export default function App() {
           isLoading={isLoading}
           loadingLabel={loadingLabel}
           sketchMode={sketchMode}
-          song={song}
           weather={weather}
           emotions={emotions}
           summary={summary}
@@ -203,8 +201,6 @@ export default function App() {
               isLoading={isLoading}
               sketchMode={sketchMode}
               onSketchModeChange={mode => dispatch({ type: 'SET_SKETCH_MODE', payload: mode })}
-              song={song}
-              onSongChange={val => dispatch({ type: 'SET_SONG', payload: val })}
               weather={weather}
               onWeatherChange={val => dispatch({ type: 'SET_WEATHER', payload: val })}
               emotions={emotions}

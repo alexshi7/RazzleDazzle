@@ -13,8 +13,6 @@ export default function ChatInterface({
   isLoading,
   sketchMode,
   onSketchModeChange,
-  song,
-  onSongChange,
   weather,
   onWeatherChange,
   emotions,
@@ -81,8 +79,12 @@ export default function ChatInterface({
         ))}
         {isLoading && (
           <div className="flex justify-start mb-3">
-            <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-xs font-bold mr-2 shrink-0">
-              AI
+            <div className="w-8 h-8 rounded-full ring-1 ring-white/10 mr-2 shrink-0 bg-gray-900 overflow-hidden">
+              <img
+                src="/touchdown.jpg"
+                alt="Razzle Dazzle avatar"
+                className="w-full h-full object-cover object-top scale-[1.9] origin-top"
+              />
             </div>
             <div className="bg-gray-800 rounded-2xl rounded-bl-sm px-4 py-3">
               <div className="flex gap-1.5 items-center">
@@ -143,30 +145,6 @@ export default function ChatInterface({
         <p className="mt-2 text-xs text-gray-600">
           These inputs are required for generation. If they do not apply, explicitly choose <span className="text-gray-400">N/A</span>.
         </p>
-      </div>
-
-      {/* Song picker */}
-      <div className="px-4 pb-1 shrink-0">
-        <div className="flex items-center gap-2 bg-gray-800/60 border border-gray-700 rounded-xl px-3 py-2">
-          <span className="text-gray-500 text-base shrink-0">♪</span>
-          <input
-            type="text"
-            value={song}
-            onChange={e => onSongChange(e.target.value)}
-            placeholder="Add a song that fits this moment (optional)"
-            disabled={isLoading}
-            className="flex-1 bg-transparent text-sm text-gray-300 placeholder-gray-600 outline-none disabled:opacity-50"
-          />
-          {song && (
-            <button
-              onClick={() => onSongChange('')}
-              disabled={isLoading}
-              className="text-gray-600 hover:text-gray-400 transition-colors text-xs shrink-0"
-            >
-              ✕
-            </button>
-          )}
-        </div>
       </div>
 
       {/* Toggle */}

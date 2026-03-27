@@ -84,7 +84,6 @@ const server = createServer(async (req, res) => {
       const sketches = await generateProofSketches(
         body.summary,
         body.sketchMode,
-        body.song,
         body.emotions,
         body.weather
       );
@@ -98,8 +97,7 @@ const server = createServer(async (req, res) => {
         body.summary,
         body.sketchMode,
         body.currentCode,
-        body.feedbackHistory,
-        body.song
+        body.feedbackHistory
       );
       sendJson(res, 200, { code });
       return;

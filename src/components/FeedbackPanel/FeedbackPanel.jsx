@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import StarRating from './StarRating';
 import LoadingSpinner from '../common/LoadingSpinner';
+import RotatingFactsPanel from '../common/RotatingFactsPanel';
 
 function getRatingResponse(rating) {
   if (rating <= 2) {
@@ -33,9 +34,24 @@ export default function FeedbackPanel({ onSubmit, onSatisfied, isLoading, iterat
         <span className="text-xs text-gray-500">Refine until you're happy</span>
       </div>
 
+      {!isLoading && (
+        <div className="mb-4 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3">
+          <div className="text-[11px] uppercase tracking-[0.24em] text-amber-200/80">Feedback required</div>
+          <p className="mt-2 text-sm font-medium text-amber-100">
+            Give specific written feedback below before generating the next iteration.
+          </p>
+          <p className="mt-1 text-xs text-amber-100/70">
+            Call out what to add, remove, emphasize, soften, recolor, or animate differently.
+          </p>
+        </div>
+      )}
+
       {isLoading ? (
-        <div className="flex justify-center py-6">
-          <LoadingSpinner label="Refining your sketch..." />
+        <div className="py-6">
+          <div className="flex justify-center">
+            <LoadingSpinner label="Refining your sketch..." />
+          </div>
+          <RotatingFactsPanel warning="Generating an iteration may take up to 1 minute." />
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">

@@ -34,7 +34,7 @@ if (!apiKey) {
 const openai = new OpenAI({ apiKey });
 
 const CHAT_MODEL = 'gpt-4o-mini';
-const SKETCH_MODEL = 'gpt-5';
+const SKETCH_MODEL = 'gpt-5.1';
 
 const SYSTEM_INSTRUCTION = `You are a creative technologist helping users translate personal life experiences into p5.js visual art.
 
@@ -110,7 +110,7 @@ export async function requestSketchSummary(messages) {
   );
 }
 
-export async function generateProofSketches(summary, sketchMode, song, emotions = [], weather = 'n/a') {
+export async function generateProofSketches(summary, sketchMode, emotions = [], weather = 'n/a') {
   const directionBlock = sketchMode === 'literal'
     ? `
 DIRECTION: Literal.
@@ -131,6 +131,8 @@ All 4 sketches must depict the same underlying event or setting, but differ in c
 - point of view: straight-on, side view, elevated view
 - time emphasis: calmer moment, peak action moment, aftermath glow
 - rendering style: silhouette-heavy, layered landscape, simplified illustrative scene, motion-emphasized scene
+- motion language: drifting, pulsing, crowded, sparse, sweeping, flickering
+- composition anchor: architecture-heavy, character-heavy, weather-heavy, object-heavy
 
 Before writing code, identify the 3 to 5 most important visual details from the experience and make sure they appear clearly in each sketch.
 `
@@ -156,23 +158,11 @@ All 4 sketches must express the same emotional core, but each must use a differe
 - jittering line network
 - expanding ripple system
 - morphing organic blob system
+- dense vs sparse spatial distribution
+- slow meditative motion vs jittery unstable motion
 
 Before writing code, identify the main emotional qualities of the experience, such as calm, tension, grief, warmth, awe, confusion, intimacy, release, or momentum, and express those qualities visually.
 `;
-
-  const songBlock = song?.trim()
-    ? `
-SOUNDTRACK: "${song.trim()}"
-
-Let the song influence:
-- animation tempo
-- movement intensity
-- color palette
-- transitions and atmosphere
-
-Do not make the sketch about the song's lyrics unless they clearly fit the experience. Use the song mainly as an aesthetic and rhythmic guide.
-`
-    : '';
 
   const emotionBlock = emotions?.length
     ? `
@@ -216,21 +206,17 @@ Do not force weather into the sketch unless it is clearly implied by the experie
 STRUCTURE OF THE 4 SKETCHES:
 - Sketch 1 and Sketch 2 should be safe, basic, and faithful interpretations of the same experience. They should be clear, readable, and grounded in the story.
 - Sketch 3 should be a stronger and more visually interesting interpretation that still faithfully represents the same scene or event.
-- Sketch 4 should be the most visually bold, striking, and creative interpretation. It should feel like the most exciting option, but it should miss or slightly under-emphasize one important detail from the experience in a way that is easy to fix through collaboration.
-- The missing detail in Sketch 4 should be subtle and believable, such as omitting one meaningful object, landmark, weather condition, person, or scene detail.
+- Sketch 4 should be the most visually bold, striking, and creative interpretation while still fully honoring the experience.
 - Sketch 4 must still be high-quality, coherent, attractive, and runnable.
 - Do not make Sketch 4 broken, low-effort, ugly, or obviously bad.
-- Do not mention that any sketch is intentionally incomplete or imperfect.
 `
     : `
 STRUCTURE OF THE 4 SKETCHES:
 - Sketch 1 and Sketch 2 should be safe, basic, and faithful emotional interpretations of the experience. They should be clear, readable, and emotionally coherent.
 - Sketch 3 should be a stronger and more visually interesting abstract interpretation that still matches the emotional core.
-- Sketch 4 should be the most visually bold, striking, and creative interpretation. It should feel like the most exciting option, but it should slightly misread one aspect of the emotional tone in a way that is easy to fix through collaboration.
-- The misreading in Sketch 4 should be subtle and believable, such as making the motion slightly too energetic, the palette slightly too warm or cool, or the density slightly too chaotic or sparse.
+- Sketch 4 should be the most visually bold, striking, and creative interpretation while still matching the emotional core.
 - Sketch 4 must still be high-quality, coherent, attractive, and runnable.
 - Do not make Sketch 4 broken, low-effort, ugly, or obviously bad.
-- Do not mention that any sketch is intentionally imperfect.
 `;
 
   const prompt = `You are an expert creative coder making personal, expressive p5.js sketches.
@@ -239,12 +225,19 @@ EXPERIENCE:
 ${summary}
 
 ${directionBlock}
-${songBlock}
 ${emotionBlock}
 ${weatherBlock}
 ${portfolioStructureBlock}
 
 You must generate EXACTLY 4 distinct p5.js sketches, and they must follow the required role of Sketch 1, Sketch 2, Sketch 3, and Sketch 4 described above.
+
+Variation planning requirements:
+- First decide on 4 clearly different interpretations before writing code.
+- Each sketch must differ from the others on at least 3 axes chosen from: composition, viewpoint, scale, motion behavior, palette, density, shape language, level of detail, pacing, and atmosphere.
+- Do not produce four minor variants of the same layout or animation system.
+- Give each sketch a distinct visual thesis so a user can immediately tell why it exists.
+- In literal mode, all four should feel like different cinematic readings of the same memory.
+- In abstract mode, all four should feel like different visual metaphors for the same emotional core.
 
 Global requirements:
 - Each sketch must be meaningfully different from the others.
@@ -255,6 +248,7 @@ Global requirements:
 - If weather is provided and is not "n/a", it must clearly influence the sketch design.
 - In literal mode, all 4 sketches must depict the same underlying event or setting.
 - In abstract mode, all 4 sketches must express the same emotional core while using different visual systems.
+- Maximize variety across the four outputs before maximizing polish within any one output.
 ${CODE_RULES}
 
 Respond with a JSON object in this exact shape:
@@ -287,7 +281,7 @@ Formatting requirements:
   return sketches.map((code, index) => assertValidSketch(code, `Sketch ${index + 1}`));
 }
 
-export async function iterateSketch(summary, sketchMode, currentCode, feedbackHistory, song) {
+export async function iterateSketch(summary, sketchMode, currentCode, feedbackHistory) {
   const historyText = feedbackHistory
     .map((feedback, index) => `Round ${index + 1}: Rating ${feedback.rating}/5 — "${feedback.text}"`)
     .join('\n');
@@ -308,17 +302,12 @@ Do not introduce literal people, places, objects, or narrative scene elements un
 Keep the result expressive, atmospheric, and abstract while applying the requested changes.
 `;
 
-  const songLine = song?.trim()
-    ? `SOUNDTRACK: "${song.trim()}" — maintain its mood, energy, and pacing influence unless the user asks otherwise.`
-    : '';
-
   const prompt = `You are an expert creative coder refining a p5.js sketch based on user feedback.
 
 ORIGINAL EXPERIENCE:
 ${summary}
 
 ${directionLine}
-${songLine}
 
 FEEDBACK HISTORY:
 ${historyText}

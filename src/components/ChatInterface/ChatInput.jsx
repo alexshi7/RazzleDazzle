@@ -1,7 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function ChatInput({ onSend, disabled, canSubmit, submitHint }) {
   const [text, setText] = useState('');
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (!disabled) {
+      textareaRef.current?.focus();
+    }
+  }, [disabled]);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -20,6 +27,7 @@ export default function ChatInput({ onSend, disabled, canSubmit, submitHint }) {
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 p-4 border-t border-gray-700/50">
       <textarea
+        ref={textareaRef}
         value={text}
         onChange={e => setText(e.target.value)}
         onKeyDown={handleKeyDown}

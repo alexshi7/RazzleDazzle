@@ -1,5 +1,6 @@
 import SketchCard from './SketchCard';
 import GeneratingBar from '../common/GeneratingBar';
+import RotatingFactsPanel from '../common/RotatingFactsPanel';
 
 export default function SketchGrid({ sketches, onSelect, isLoading, progress, loadingLabel }) {
   return (
@@ -13,8 +14,9 @@ export default function SketchGrid({ sketches, onSelect, isLoading, progress, lo
 
       <div className="flex-1 overflow-y-auto p-6">
         {isLoading ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex min-h-full flex-col items-center justify-center">
             <GeneratingBar progress={progress} label={loadingLabel} />
+            <RotatingFactsPanel warning="Generating all 4 sketches may take up to 3 minutes." />
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4">

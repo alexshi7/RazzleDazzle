@@ -11,7 +11,6 @@ const initialState = {
   phase: PHASE.CHAT,
   messages: [],
   sketchMode: '',
-  song: '',
   weather: '',
   emotions: [],
   summary: '',
@@ -34,8 +33,6 @@ function reducer(state, action) {
       return { ...state, messages: [...state.messages, action.payload] };
     case 'SET_SKETCH_MODE':
       return { ...state, sketchMode: action.payload };
-    case 'SET_SONG':
-      return { ...state, song: action.payload };
     case 'SET_WEATHER':
       return { ...state, weather: action.payload };
     case 'SET_EMOTIONS':
